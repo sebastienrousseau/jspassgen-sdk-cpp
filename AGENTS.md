@@ -11,7 +11,8 @@ This repository's value is that a C++ caller gets exactly the passwords
 the core would make from the same random draws, generated on the
 caller's machine from the operating system's CSPRNG and never sent
 anywhere. Today it holds the random port and its OS backends only; the
-generators wait for the conformance kit. Read
+generators wait for the conformance kit (shipped in jspassgen 0.0.21)
+to be vendored. Read
 [CONTRIBUTING.md](CONTRIBUTING.md) as well.
 
 ## Rules
@@ -26,9 +27,9 @@ generators wait for the conformance kit. Read
   gets the new heading. Work for the next version starts on
   `feat/v<next-version>`.
 - **No generator before the kit.** Do not port a password type,
-  validation rule, entropy calculation or wordlist until jspassgen
-  publishes its conformance kit; a port written without it cannot be
-  shown to match the core. Once it exists, `conformance/` is vendored
+  validation rule, entropy calculation or wordlist until jspassgen's
+  conformance kit is vendored here; a port written without it cannot be
+  shown to match the core. The kit ships in jspassgen 0.0.21; `conformance/` is vendored
   byte for byte from jspassgen with the commit in `ci/core.ref`, and is
   never edited here.
 - **Randomness from the OS CSPRNG only.** Every draw goes through
