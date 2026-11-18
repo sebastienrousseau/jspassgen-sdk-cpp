@@ -2,7 +2,7 @@
 
 # AGENTS.md
 
-`jspassgen-sdk-cpp` is the planned native C++17 port of the jspassgen
+`jspassgen-sdk-cpp` is the native C++17 port of the jspassgen
 core (`packages/core` in
 [jspassgen](https://github.com/sebastienrousseau/jspassgen)). jspassgen
 is a suite of repositories released at one version

@@ -2,7 +2,7 @@
 
 # Contributing
 
-Thanks for looking. This repository is the planned native C++17 port of
+Thanks for looking. This repository is the native C++17 port of
 the jspassgen core. The JavaScript core in
 [`jspassgen`](https://github.com/sebastienrousseau/jspassgen) is the
 reference: a change here should make the port more faithful to it,

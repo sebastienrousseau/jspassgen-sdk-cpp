@@ -4,7 +4,7 @@ message: "If you use jspassgen-sdk-cpp in research or production write-ups, plea
 type: software
 title: "jspassgen-sdk-cpp: the native C++ port of the jspassgen core"
 abstract: >-
-  The planned native C++17 port of the jspassgen password and passphrase
+  The native C++17 port of the jspassgen password and passphrase
   core, drawing every random value from the operating system's CSPRNG.
   It currently provides the random port and its OS backends; the
   generators follow jspassgen's conformance kit.

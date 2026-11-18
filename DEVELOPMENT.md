@@ -71,8 +71,7 @@ only one open against `main`.
 `.github/workflows/release.yml` releases a pushed `v<version>` tag as a
 GitHub release, with no package registry
 ([ADR 0002](docs/adr/0002-cmake-package-github-release-no-registry.md)).
-No release has been made yet; the first is planned as `0.0.22`, and the
-workflow has not run against a real tag.
+The first release is `0.0.22`.
 
 1. On `feat/v<version>`: move the version in `CMakeLists.txt` and the
    files `scripts/verify-release-versions` lists, and date the

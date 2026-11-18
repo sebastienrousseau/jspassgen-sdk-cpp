@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/sebastienrousseau/jspassgen-sdk-cpp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sebastienrousseau/jspassgen-sdk-cpp/ci.yml?style=for-the-badge&logo=github" alt="Build" height="28" /></a>
-  <a href="https://github.com/sebastienrousseau/jspassgen-sdk-cpp/releases"><img src="https://img.shields.io/badge/release-not%20published%20yet-lightgrey?style=for-the-badge&color=fc8d62&logo=cplusplus" alt="Release: not published yet" height="28" /></a>
+  <a href="https://github.com/sebastienrousseau/jspassgen-sdk-cpp/releases"><img src="https://img.shields.io/github/v/release/sebastienrousseau/jspassgen-sdk-cpp?style=for-the-badge&color=fc8d62&logo=cplusplus" alt="Latest release" height="28" /></a>
   <a href="https://github.com/sebastienrousseau/jspassgen-sdk-cpp/blob/main/docs/index.md"><img src="https://img.shields.io/badge/docs-in%20repository-blue?style=for-the-badge&labelColor=555555&logo=readthedocs" alt="Docs" height="28" /></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/sebastienrousseau/jspassgen-sdk-cpp"><img src="https://img.shields.io/ossf-scorecard/github.com/sebastienrousseau/jspassgen-sdk-cpp?style=for-the-badge&label=OpenSSF%20Scorecard&logo=openssf" alt="OpenSSF Scorecard" height="28" /></a>
   <a href="LICENSE-APACHE"><img src="https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg?style=for-the-badge" alt="License: Apache-2.0 OR MIT" height="28" /></a>
@@ -57,14 +57,6 @@
 
 ---
 
-## Development version
-
-This branch prepares unreleased v0.0.22. It is not tagged and has no
-GitHub release yet; until it ships, pin a commit SHA in place of the tag
-in the snippets below.
-
----
-
 ## Install
 
 ### As a C++ library
@@ -74,7 +66,7 @@ include(FetchContent)
 FetchContent_Declare(
   jspassgen
   GIT_REPOSITORY https://github.com/sebastienrousseau/jspassgen-sdk-cpp.git
-  GIT_TAG        v0.0.22)  # not tagged yet: use a commit SHA until it is
+  GIT_TAG        v0.0.22)
 FetchContent_MakeAvailable(jspassgen)
 
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
@@ -182,10 +174,11 @@ conformance kit as its generators land.
 | **`jspassgen-sdk-cpp`** | Native C++17 port on the OS CSPRNG | C++ programs |
 | [`jspassgen.github.io`](https://github.com/sebastienrousseau/jspassgen.github.io) | Source of [jspassgen.com](https://jspassgen.com) | Evaluating the suite |
 
-Only `@sebastienrousseau/jspassgen` is on a package registry so far
-(0.0.21 on npm). The table gives each member's purpose; the other members
-are early, each README's Capabilities at a glance says what works today,
-and they first publish with the suite's first lockstep release.
+Every member ships at 0.0.22, the suite's first lockstep release: the
+core, CLI, MCP and LSP servers on npm, the Python, Rust, Java and .NET
+SDKs on PyPI, crates.io, Maven Central and NuGet, and the C++ SDK and
+the site as GitHub releases. The table gives each member's purpose, and
+each README's Capabilities at a glance says what works today.
 
 ---
 
@@ -193,8 +186,8 @@ and they first publish with the suite's first lockstep release.
 
 | Area | Capability | Status |
 | :--- | :--- | :--- |
-| Random port | `RandomSource`: `fill_bytes`, `random_int(max)` | Implemented, unreleased |
-| OS CSPRNG | `OsRandomSource`: `getrandom(2)`, `arc4random_buf(3)`, `BCryptGenRandom`; unbiased `random_int` | Implemented, unreleased |
+| Random port | `RandomSource`: `fill_bytes`, `random_int(max)` | Released in 0.0.22 |
+| OS CSPRNG | `OsRandomSource`: `getrandom(2)`, `arc4random_buf(3)`, `BCryptGenRandom`; unbiased `random_int` | Released in 0.0.22 |
 | Password types | The generators in the core's `PASSWORD_TYPES`, their validation and error codes | Not ported: waits for the conformance kit |
 | Entropy | The core's entropy calculation | Not ported: waits for the conformance kit |
 | Wordlist | The EFF diceware list, vendored byte-identical | Not ported: waits for the conformance kit |
@@ -305,8 +298,8 @@ The library reads randomness from the operating system and returns it to
 the caller. It makes no network call, has no telemetry, writes no file
 and never logs. `random_int` never returns a modulo of raw bytes
 unchecked: the tests include a chi-square check that a plain modulo
-fails and `random_int` passes. Releases are planned to come from signed
-annotated tags and to carry `SHA256SUMS`.
+fails and `random_int` passes. Releases come from signed annotated tags
+and carry a source archive and `SHA256SUMS`.
 
 Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
 
@@ -333,13 +326,11 @@ Report vulnerabilities according to [`SECURITY.md`](SECURITY.md).
 
 - During the `0.0.x` lifecycle, versions advance in `0.0.1` steps in
   lockstep with the jspassgen suite, and any step may break the API.
-  Nothing is released, so nothing is stable yet.
 - A removed or renamed type or function, a changed exception type, or a
   change to the sequence of draws or to what a generator returns for the
   same draws is breaking, even when no signature moves.
 - The draw algorithm of `random_int` will be fixed by the conformance kit
-  and may change before the first release. ABI compatibility is not
-  promised.
+  and may change in a later `0.0.x`. ABI compatibility is not promised.
 - The C++ standard and CMake floors move only as described in the
   [toolchain policy](docs/POLICIES.md).
 

@@ -7,7 +7,7 @@ maintainer is unavailable.
 
 ## Scope
 
-The SDK is the planned native C++17 port of the jspassgen core. Changes
+The SDK is the native C++17 port of the jspassgen core. Changes
 are weighed against faithfulness to the core (proven by the conformance
 kit once it exists), the security of the random source, and clarity
 over feature breadth.
