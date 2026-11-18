@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+//
+// A container with the toolchain CI uses on Linux (GCC, clang 18,
+// clang-format 18, clang-tidy 18, Python, shellcheck), so `make check`
+// works after the first build. The base image is pinned by digest.
+// rust-code-analysis-cli is not preinstalled: `make complexity` says it
+// is skipped (`cargo install rust-code-analysis-cli --version 0.0.25
+// --locked` adds it).
+{
+  "name": "jspassgen-sdk-cpp",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-ubuntu-24.04@sha256:d51703c4fcbe93cd889d38005847521d87cca4d304f33423430daf10a384a332",
+  "containerEnv": {
+    "CLANG_FORMAT": "clang-format-18",
+    "CLANG_TIDY": "clang-tidy-18"
+  },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 python3-venv shellcheck && make build",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.cmake-tools", "llvm-vs-code-extensions.vscode-clangd"]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+# codespell (docs-lint workflow and pre-commit). Skipped: build output,
+# editor caches, licence texts, the demo GIF and, once vendored, the
+# conformance kit from jspassgen.
+[codespell]
+skip = ./.git,./.cache,*/node_modules,./build,./build-*,./LICENSES,./.github/demo.gif,./conformance
+check-hidden = true
