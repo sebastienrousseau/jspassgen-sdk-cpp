@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 # Fails unless README.md follows the suite's README template: a centred
-# plain-text h1 ("<Project> SDK for <Language>"), the template's
-# second-level headings in its order, no unresolved {{UPPER_SNAKE_CASE}} variable
+# plain-text h1 (the repository name), the template's
+# second-level headings in its order (plus an optional "Development version" after Contents), no unresolved {{UPPER_SNAKE_CASE}} variable
 # outside code, and the demo block (an absolute URL to
 # .github/demo.gif, as the template requires for registries) between the
 # badge row and the Contents. The heading list is the template's; change
@@ -17,22 +17,20 @@ readme="${1:-README.md}"
 
 title=$(sed -n 's|^<h1 align="center">\([^<]*\)</h1>$|\1|p' "$readme" | head -1)
 [ -n "$title" ] || { echo "readme-check: no <h1 align=\"center\">name</h1>" >&2; exit 1; }
-# The ecosystem and "When not to use" headings name the project, not the SDK.
-project=${title% SDK for *}
 
 expected=$(cat <<LIST
 Contents
 Install
 Requirements
 Quick Start
-The $project ecosystem
+The jspassgen ecosystem
 Capabilities at a glance
 Ecosystem comparison
 Benchmarks
 Features
 Configuration
 Examples
-When not to use $project
+When not to use $title
 Development
 Security
 Documentation
@@ -42,7 +40,10 @@ LIST
 )
 
 outside_code=$(awk '/^[[:space:]]*(```|~~~)/ { fence = !fence; next } !fence' "$readme")
-actual=$(sed -n 's/^## //p' <<< "$outside_code")
+# "Development version" (noyalib's form) may follow Contents while the
+# manifest version is unreleased; it goes when that version ships.
+actual=$(sed -n 's/^## //p' <<< "$outside_code" |
+  awk 'NR == 2 && $0 == "Development version" { next } { print }')
 if [ "$actual" != "$expected" ]; then
   echo "readme-check: second-level headings differ from the template:" >&2
   diff <(echo "$expected") <(echo "$actual") >&2 || true
@@ -66,4 +67,4 @@ if [ -z "$demo_line" ] || [ -z "$last_badge" ] || [ -z "$contents" ] ||
 fi
 [ -f .github/demo.gif ] || { echo "readme-check: .github/demo.gif is missing; run make demo" >&2; exit 1; }
 
-echo "readme-check: $readme follows the template ($project)"
+echo "readme-check: $readme follows the template ($title)"
