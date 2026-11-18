@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+cff-version: 1.2.0
+message: "If you use jspassgen-sdk-cpp in research or production write-ups, please cite it as below."
+type: software
+title: "jspassgen-sdk-cpp: the native C++ port of the jspassgen core"
+abstract: >-
+  The planned native C++17 port of the jspassgen password and passphrase
+  core, drawing every random value from the operating system's CSPRNG.
+  It currently provides the random port and its OS backends; the
+  generators follow jspassgen's conformance kit.
+authors:
+  - family-names: Rousseau
+    given-names: Sebastien
+version: "0.0.22"
+# Dual-licensed, at the user's option (LICENSE-APACHE, LICENSE-MIT).
+# CFF 1.2.0 takes SPDX licence identifiers, not an SPDX expression; a
+# list of several means the work is available under any of them.
+license:
+  - Apache-2.0
+  - MIT
+repository-code: "https://github.com/sebastienrousseau/jspassgen-sdk-cpp"
+url: "https://jspassgen.com"
+keywords:
+  - password generator
+  - CSPRNG
+  - C++
+  - SDK

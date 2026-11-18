@@ -1,0 +1,151 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+# Lint (version files, clang-format, file size, the complexity ceilings
+# measured by rust-code-analysis, and clang-tidy), build and unit tests
+# on GCC and Clang (each also with ASan and UBSan), the same tests on
+# macOS and Windows so every operating-system CSPRNG backend runs
+# (getrandom, arc4random_buf, BCryptGenRandom), and the installed CMake
+# package.
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Format, file size, complexity and clang-tidy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CXX: clang++-18
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Tool versions
+        run: |
+          cmake --version
+          clang-format-18 --version
+          clang-tidy-18 --version
+
+      - name: Version files agree
+        run: make versions
+
+      - name: Shell scripts (shellcheck)
+        run: shellcheck scripts/*.sh scripts/verify-release-versions
+
+      - name: Format and file size
+        run: make format-check filesize CLANG_FORMAT=clang-format-18
+
+      - name: Cache rust-code-analysis-cli
+        id: rca-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cargo/bin/rust-code-analysis-cli
+          key: rca-0.0.25-${{ runner.os }}
+
+      - name: Install rust-code-analysis-cli
+        if: steps.rca-cache.outputs.cache-hit != 'true'
+        run: cargo install rust-code-analysis-cli --version 0.0.25 --locked
+
+      - name: Complexity ceilings (cyclomatic, cognitive, Halstead, lines)
+        run: make complexity
+
+      - name: clang-tidy (bugprone, performance, complexity ceilings)
+        run: make tidy CLANG_TIDY=clang-tidy-18
+
+  build:
+    name: Build and unit tests (${{ matrix.name }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc
+            cc: gcc
+            cxx: g++
+            flags: ""
+          - name: gcc-sanitizers
+            cc: gcc
+            cxx: g++
+            flags: "-fsanitize=address,undefined -fno-sanitize-recover=undefined"
+          - name: clang
+            cc: clang-18
+            cxx: clang++-18
+            flags: ""
+          - name: clang-sanitizers
+            cc: clang-18
+            cxx: clang++-18
+            flags: "-fsanitize=address,undefined -fno-sanitize-recover=undefined"
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build with warnings as errors, run the tests and the example
+        env:
+          FLAGS: ${{ matrix.flags }}
+        run: |
+          make test example CMAKE_ARGS="-DCMAKE_CXX_FLAGS='$FLAGS' -DCMAKE_EXE_LINKER_FLAGS='$FLAGS'"
+
+  platforms:
+    name: Build and unit tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS runs the arc4random_buf backend, Windows (MSVC, /W4 /WX)
+        # the BCryptGenRandom one.
+        os: [macos-15, windows-2025]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Configure with warnings as errors
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DJSPASSGEN_WERROR=ON
+
+      - name: Build
+        run: cmake --build build --config Debug --parallel
+
+      - name: Tests
+        run: ctest --test-dir build -C Debug --output-on-failure
+
+      - name: Example
+        run: |
+          if [ -x build/Debug/jspassgen_random_draws.exe ]; then
+            build/Debug/jspassgen_random_draws.exe
+          else
+            build/jspassgen_random_draws
+          fi
+
+  package:
+    name: Installed CMake package (find_package)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install to a prefix, build and run a consumer against it
+        run: make package-test

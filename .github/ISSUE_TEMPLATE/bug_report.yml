@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+name: Bug Report
+description: Report a reproducible problem in jspassgen-sdk-cpp
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issues are public. Never paste a password or secret you use.
+        Report security problems privately, as SECURITY.md describes.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "0.0.22"
+    validations:
+      required: true
+  - type: input
+    id: toolchain
+    attributes:
+      label: Compiler and CMake versions
+      placeholder: "g++ 13.3, CMake 3.28"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - FreeBSD, OpenBSD, NetBSD or DragonFly BSD
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal Reproducible Example
+      render: cpp
+    validations:
+      required: true
+  - type: textarea
+    id: error_output
+    attributes:
+      label: Error Output
+      description: The exception type and message, or compiler output.
+    validations:
+      required: true
