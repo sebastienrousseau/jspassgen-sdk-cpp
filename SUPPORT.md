@@ -14,13 +14,13 @@
 
 ## Supported versions
 
-Nothing has been released yet. While pre-`1.0`, the latest released
-`0.0.x` will be supported; older ones will not. The library follows the
+`0.0.22` is the latest release. While pre-`1.0`, the latest released
+`0.0.x` is supported; older ones are not. The library follows the
 jspassgen suite's version.
 
 | Version | Status | Supported |
 | :--- | :--- | :--- |
-| `0.0.22` (planned, unreleased) | In development | Not released |
+| `0.0.22` (latest) | Released 2026-11-18 | Yes |
 | `main` | In development | Yes |
 
 ## Questions and bugs

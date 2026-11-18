@@ -6,13 +6,13 @@
 
 This library follows the
 [jspassgen](https://github.com/sebastienrousseau/jspassgen) suite's
-version. Nothing has been released yet; `0.0.22` is the planned first
-release. While pre-`1.0`, the latest released `0.0.x` will receive
-security fixes; older `0.0.x` versions will not.
+version. `0.0.22`, the first release, is the latest. While pre-`1.0`,
+the latest released `0.0.x` receives security fixes; older `0.0.x`
+versions do not.
 
 | Version | Status | Receives security fixes? |
 | :--- | :--- | :--- |
-| `0.0.22` (planned, unreleased) | In development | Not released |
+| `0.0.22` (latest) | Released 2026-11-18 | Yes |
 | `main` | In development | Yes |
 
 ## Reporting a vulnerability

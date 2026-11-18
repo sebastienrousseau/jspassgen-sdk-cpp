@@ -6,10 +6,10 @@ All notable changes to this project are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 advance in `0.0.1` steps in lockstep with the jspassgen suite.
 
-## [0.0.22] - Unreleased
+## [0.0.22] - 2026-11-18
 
-The scaffold of the C++ SDK, planned to first ship at 0.0.22, the
-jspassgen suite's first shared version. No password generator yet: the
+The scaffold of the C++ SDK, first shipped at 0.0.22, the jspassgen
+suite's first shared version. No password generator yet: the
 ports wait for jspassgen's conformance kit.
 
 ### Added
@@ -32,6 +32,14 @@ ports wait for jspassgen's conformance kit.
   and Clang with ASan and UBSan, macOS and Windows builds, the package
   test, CodeQL, Scorecard, DCO, markdownlint, codespell, REUSE and
   lychee.
+- Release workflow (`.github/workflows/release.yml`) for a pushed
+  `v<version>` tag: `scripts/check-release-tag.sh` refuses a tag that
+  is not annotated, not signed, not on the built commit, or whose
+  message is not `jspassgen-sdk-cpp v<version>` or whose version is not
+  the one in `CMakeLists.txt`; then `make check`, a `git archive` source
+  archive that `scripts/verify-source-archive.sh` builds, tests and
+  installs on its own, `SHA256SUMS`, and a draft GitHub release behind
+  the `release` environment's required reviewer.
 - Documentation: README, AGENTS.md, CONTRIBUTING.md, DEVELOPMENT.md,
   GOVERNANCE.md, SUPPORT.md, SECURITY.md, docs/ and decision records
   0001 and 0002.

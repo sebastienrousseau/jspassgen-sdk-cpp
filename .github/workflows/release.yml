@@ -1,0 +1,145 @@
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+# Release on a pushed `v<version>` tag, in two jobs (ADR 0002: a GitHub
+# release only, no package registry):
+#
+# 1. check: scripts/check-release-tag.sh refuses a tag that is not
+#    annotated, not signed, not on the checked-out commit, or whose
+#    message is not `<repository> v<version>` or whose version is not
+#    project(VERSION) in CMakeLists.txt. Then the `make check` gate with
+#    every tool present, a source archive made by `git archive` from the
+#    tag, scripts/verify-source-archive.sh (the extracted archive builds
+#    with warnings as errors, ctest passes, and a find_package consumer
+#    builds against its installed package), and SHA256SUMS.
+# 2. github-release: after a maintainer approves the `release`
+#    environment (required reviewer), a draft GitHub release titled
+#    `<repository> <version>` with the archive and SHA256SUMS attached,
+#    and notes with What's Changed, the checksums and the Full Changelog
+#    line. The maintainer writes the Highlights and publishes the draft.
+#
+# CI cannot verify the tag's signature (it has no maintainer keys); it
+# checks that the tag carries one. Verify it locally with
+# `git verify-tag v<version>` (KEYS.asc) before pushing the tag.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check the tag, run the gate, build the source archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CC: clang-18
+      CXX: clang++-18
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Check the tag against CMakeLists.txt
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+          PROJECT: ${{ github.event.repository.name }}
+        run: |
+          git fetch --force origin "+refs/tags/${TAG}:refs/tags/${TAG}"
+          version=$(scripts/check-release-tag.sh "$TAG" "$PROJECT" "$GITHUB_SHA")
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache rust-code-analysis-cli
+        id: rca-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cargo/bin/rust-code-analysis-cli
+          key: rca-0.0.25-${{ runner.os }}
+
+      - name: Install rust-code-analysis-cli
+        if: steps.rca-cache.outputs.cache-hit != 'true'
+        run: cargo install rust-code-analysis-cli --version 0.0.25 --locked
+
+      - name: Gate (make check)
+        run: make check CLANG_FORMAT=clang-format-18 CLANG_TIDY=clang-tidy-18
+
+      - name: Source archive and checksum
+        env:
+          TAG: ${{ github.ref_name }}
+          PROJECT: ${{ github.event.repository.name }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          mkdir -p release
+          archive="${PROJECT}-${VERSION}.tar.gz"
+          git archive --format=tar.gz --prefix="${PROJECT}-${VERSION}/" "$TAG" > "release/${archive}"
+          (cd release && sha256sum "$archive" > SHA256SUMS && cat SHA256SUMS)
+
+      - name: The archive builds, tests and installs on its own
+        env:
+          PROJECT: ${{ github.event.repository.name }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: scripts/verify-source-archive.sh "release/${PROJECT}-${VERSION}.tar.gz" "${RUNNER_TEMP}/archive"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: release/
+          if-no-files-found: error
+          retention-days: 30
+
+  github-release:
+    name: Draft the GitHub release
+    needs: check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: write # create the draft release and upload its assets
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release
+
+      - name: Check the archive against SHA256SUMS
+        working-directory: release
+        run: sha256sum --check SHA256SUMS
+
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+          PROJECT: ${{ github.event.repository.name }}
+          VERSION: ${{ needs.check.outputs.version }}
+        # The generated notes end with the Full Changelog line; the
+        # checksums go just before it, as the release standard orders them.
+        run: |
+          gh api "repos/${REPO}/releases/generate-notes" -f tag_name="$TAG" --jq .body > generated.md
+          {
+            echo "## Highlights ⭐️"
+            echo
+            grep -v '^\*\*Full Changelog\*\*' generated.md
+            echo
+            echo "## Checksums"
+            echo
+            echo "SHA-256 of every asset attached to this release:"
+            echo
+            echo '```text'
+            cat release/SHA256SUMS
+            echo '```'
+            echo
+            grep '^\*\*Full Changelog\*\*' generated.md || true
+          } > notes.md
+          gh release create "$TAG" release/* --repo "$REPO" --draft \
+            --title "${PROJECT} ${VERSION}" --notes-file notes.md --verify-tag
