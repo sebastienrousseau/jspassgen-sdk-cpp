@@ -4,8 +4,8 @@
 #
 # Publishes results to the OpenSSF REST API so the badge and the public
 # viewer work:
-#   badge:  https://api.scorecard.dev/projects/github.com/sebastienrousseau/crypto-service-sdk-cpp/badge
-#   viewer: https://scorecard.dev/viewer/?uri=github.com/sebastienrousseau/crypto-service-sdk-cpp
+#   badge:  https://api.scorecard.dev/projects/github.com/sebastienrousseau/jspassgen-sdk-cpp/badge
+#   viewer: https://scorecard.dev/viewer/?uri=github.com/sebastienrousseau/jspassgen-sdk-cpp
 #
 # All third-party actions are pinned by commit SHA (Scorecard's own
 # Pinned-Dependencies check demands it). Same workflow as the crypto-service repository.
