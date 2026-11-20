@@ -6,7 +6,7 @@ The native C++17 port of the jspassgen password and passphrase core.
 Today it provides the random port, `RandomSource`, and `OsRandomSource`,
 which draws from the operating system's CSPRNG and returns unbiased
 integers. The generators will follow jspassgen's conformance kit.
-0.0.22 is the first release.
+0.0.22 was the first release; 0.0.23 is the latest.
 
 ## Install
 
@@ -15,7 +15,7 @@ include(FetchContent)
 FetchContent_Declare(
   jspassgen
   GIT_REPOSITORY https://github.com/sebastienrousseau/jspassgen-sdk-cpp.git
-  GIT_TAG        v0.0.23)  # not tagged yet: use a commit SHA until it is
+  GIT_TAG        v0.0.23)
 FetchContent_MakeAvailable(jspassgen)
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
 ```
