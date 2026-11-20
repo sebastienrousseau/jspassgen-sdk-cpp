@@ -17,6 +17,7 @@ advance in `0.0.1` steps in lockstep with the jspassgen suite.
   it modulo `max`. `make fuzz` and the CI `fuzz` job run it with Clang,
   ASan and UBSan for 60 seconds; ctest replays its seed inputs on every
   platform.
+- `.github/CODEOWNERS`: the maintainer owns every file.
 
 ### Changed
 
