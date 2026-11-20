@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 # The version below is the single source of truth: version.hpp is
 # generated from it and scripts/verify-release-versions checks every
 # other file against it.
-project(jspassgen VERSION 0.0.22 DESCRIPTION "Native C++17 port of the jspassgen core"
+project(jspassgen VERSION 0.0.23 DESCRIPTION "Native C++17 port of the jspassgen core"
         LANGUAGES CXX)
 
 include(GNUInstallDirs)
@@ -29,6 +29,9 @@ option(JSPASSGEN_BUILD_EXAMPLES "Build the examples" ${JSPASSGEN_TOP_LEVEL})
 option(JSPASSGEN_WERROR "Treat compiler warnings as errors" OFF)
 option(JSPASSGEN_INSTALL "Generate the install rules and CMake package config"
        ${JSPASSGEN_TOP_LEVEL})
+# The libFuzzer target needs Clang; `make fuzz` sets the instrumentation
+# flags and runs it.
+option(JSPASSGEN_BUILD_FUZZERS "Build the libFuzzer targets (Clang only)" OFF)
 
 function(jspassgen_warnings target)
   if(MSVC)
@@ -69,10 +72,21 @@ if(JSPASSGEN_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
+if(JSPASSGEN_BUILD_FUZZERS)
+  add_executable(jspassgen_fuzz_random_int tests/fuzz/random_int_contract.cpp
+                                           tests/fuzz/random_int_fuzz.cpp)
+  target_include_directories(jspassgen_fuzz_random_int PRIVATE ${PROJECT_SOURCE_DIR}/tests
+                                                               ${PROJECT_SOURCE_DIR}/src)
+  target_link_libraries(jspassgen_fuzz_random_int PRIVATE jspassgen::jspassgen)
+  target_compile_options(jspassgen_fuzz_random_int PRIVATE -fsanitize=fuzzer)
+  target_link_options(jspassgen_fuzz_random_int PRIVATE -fsanitize=fuzzer)
+  jspassgen_warnings(jspassgen_fuzz_random_int)
+endif()
+
 # `cmake --install` puts the library, the public headers (version.hpp
 # included) and lib/cmake/jspassgen/ (package config, targets, version)
 # under the prefix, so a consumer writes
-# find_package(jspassgen 0.0.22 CONFIG) and links jspassgen::jspassgen.
+# find_package(jspassgen 0.0.23 CONFIG) and links jspassgen::jspassgen.
 # Every 0.0.x release may break the API, so the version file accepts
 # the exact version only.
 if(JSPASSGEN_INSTALL)

@@ -6,6 +6,25 @@ All notable changes to this project are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 advance in `0.0.1` steps in lockstep with the jspassgen suite.
 
+## [0.0.23] - 2026-11-20
+
+### Added
+
+- A libFuzzer target for `random_int`'s contract
+  (`tests/fuzz/random_int_fuzz.cpp`): `max` below 1 is rejected, results
+  stay in `[0, max)`, the rejection threshold is exactly 2^64 mod `max`,
+  and the rejection sampling takes the first accepted word and reduces
+  it modulo `max`. `make fuzz` and the CI `fuzz` job run it with Clang,
+  ASan and UBSan for 60 seconds; ctest replays its seed inputs on every
+  platform.
+- `.github/CODEOWNERS`: the maintainer owns every file.
+
+### Changed
+
+- Version 0.0.23, in lockstep with the jspassgen suite: `CMakeLists.txt`,
+  `CITATION.cff`, the SECURITY and SUPPORT tables, the install snippets,
+  the bug template and the package test.
+
 ## [0.0.22] - 2026-11-18
 
 The scaffold of the C++ SDK, first shipped at 0.0.22, the jspassgen

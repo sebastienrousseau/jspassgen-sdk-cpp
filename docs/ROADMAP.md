@@ -13,5 +13,6 @@ Nothing below is scheduled to a date.
 | Port the password types, their validation, error codes and entropy, and the EFF diceware list | The kit | Not started |
 | Match `random_int`'s draw algorithm to the one the kit records, if it differs | The kit | Not started |
 | Release workflow: signed tag, GitHub release with a source archive and `SHA256SUMS` | A first release | Done (`release.yml`), first run for 0.0.22 |
-| Coverage gate, fuzz targets, benchmarks, rendered manual, API compatibility check | Code for them to check | Not started |
+| Fuzz target for `random_int`'s contract (libFuzzer in CI, seed replay in ctest) | Nothing | Done, released in 0.0.23 |
+| Coverage gate, fuzz targets for the generators, benchmarks, rendered manual, API compatibility check | Code for them to check | Not started |
 | First release, `0.0.22`, with every suite member | Every member passing its gate | Done, 2026-11-18 |
