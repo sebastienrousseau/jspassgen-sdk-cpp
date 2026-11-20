@@ -14,8 +14,18 @@ set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(jspassgen_tests os_random_source_test.cpp unbiased_test.cpp version_test.cpp
-                               support/chi_square.cpp)
+# fuzz/ is the random_int() fuzz target: here its seed inputs are
+# replayed through LLVMFuzzerTestOneInput, and `make fuzz` builds the
+# same files as a libFuzzer binary (JSPASSGEN_BUILD_FUZZERS).
+add_executable(
+  jspassgen_tests
+  os_random_source_test.cpp
+  unbiased_test.cpp
+  version_test.cpp
+  support/chi_square.cpp
+  fuzz/random_int_contract.cpp
+  fuzz/random_int_fuzz.cpp
+  fuzz/random_int_fuzz_test.cpp)
 # The tests include the internal header src/unbiased.hpp to drive the
 # rejection sampling with scripted words.
 target_include_directories(jspassgen_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}

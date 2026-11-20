@@ -30,6 +30,7 @@ mise can install (`mise install`).
 | Format, file size, complexity and clang-tidy (`ci.yml`, `lint`) | `make versions format-check filesize complexity tidy` | Version files agree, clang-format 18, 500 lines per file, the AGENTS.md complexity ceilings, clang-tidy |
 | Build and unit tests, GCC and Clang with ASan and UBSan (`ci.yml`, `build`) | `make test example`; with sanitizers `make test CMAKE_ARGS="-DCMAKE_CXX_FLAGS='-fsanitize=address,undefined' -DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'"` | Warnings as errors, ctest, the example runs |
 | macOS and Windows (`ci.yml`, `platforms`) | `cmake -S . -B build -DJSPASSGEN_WERROR=ON && cmake --build build && ctest --test-dir build` | The `arc4random_buf` and `BCryptGenRandom` backends |
+| Fuzz `random_int` (`ci.yml`, `fuzz`) | `make fuzz CXX=clang++-18` (`FUZZ_SECONDS`, default 60) | The libFuzzer target `tests/fuzz/random_int_fuzz.cpp`, built with ASan and UBSan, holds the `random_int` contract for 60 seconds of generated input |
 | Installed CMake package (`ci.yml`, `package`) | `make package-test` | `cmake --install`, then `find_package(jspassgen CONFIG)` from `tests/package/` |
 | Markdown, spelling, licences, README shape, links (`docs-lint.yml`) | `npx markdownlint-cli2 "**/*.md"`, `codespell`, `reuse lint`, `scripts/readme-check.sh`, `lychee --offline '**/*.md'` | Style, typos, SPDX on every file, the README template, intra-repo links |
 | CodeQL (`codeql.yml`), Scorecard (`scorecard.yml`), DCO (`dco.yml`) | none | Static analysis, supply-chain score, `Signed-off-by` on every commit |
@@ -41,10 +42,9 @@ tool that is not installed is reported and skipped; CI always has it.
 
 Not here yet, because there is nothing for them to run: a coverage gate
 (the OS error paths cannot be reached by a test without a seam, which
-the generators' design should settle first), fuzz targets (no input is
-parsed), a
-rendered manual, benchmarks and an API compatibility check (no release
-to compare against). Each arrives with the code that gives it something
+the generators' design should settle first), a rendered manual,
+benchmarks and an API compatibility check (no release to compare
+against). Each arrives with the code that gives it something
 to check.
 
 ## Test layout
@@ -53,6 +53,7 @@ to check.
 | :--- | :--- | :--- |
 | `tests/os_random_source_test.cpp` | `OsRandomSource`: argument checks, ranges, chi-square uniformity of bytes and integers, the bias test against a plain modulo | Nothing |
 | `tests/unbiased_test.cpp` | The rejection sampling, driven by scripted 64-bit words | Nothing |
+| `tests/fuzz/` | The `random_int` fuzz target: its contract (`random_int_contract.cpp`), the libFuzzer entry point, and the seed inputs ctest replays through it | Nothing; `make fuzz` needs Clang with libFuzzer |
 | `tests/version_test.cpp` | `kVersion` matches `CMakeLists.txt` | Nothing |
 | `tests/support/` | Pearson's chi-square statistic | Nothing |
 | `tests/package/` | A consumer of the installed package | `make package-test` |

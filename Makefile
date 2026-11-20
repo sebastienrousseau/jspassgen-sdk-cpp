@@ -16,12 +16,15 @@ BUILD_DIR    ?= build
 BUILD_TYPE   ?= Debug
 CMAKE_ARGS   ?=
 PKG_DIR      ?= build-package
+FUZZ_DIR     ?= build-fuzz
+FUZZ_SECONDS ?= 60
+FUZZ_FLAGS   ?= -fsanitize=fuzzer-no-link,address,undefined -fno-sanitize-recover=undefined
 
 SOURCES = $(shell find include src tests examples -type f \( -name '*.cpp' -o -name '*.hpp' \) | sort)
 TIDY_SOURCES = $(shell find src tests examples -type f -name '*.cpp' -not -path 'tests/package/*' | sort)
 
-.PHONY: check configure build test example package-test demo format format-check filesize \
-        versions complexity tidy clean
+.PHONY: check configure build test example package-test fuzz demo format format-check \
+        filesize versions complexity tidy clean
 
 check: versions format-check filesize complexity test example tidy
 
@@ -51,6 +54,17 @@ package-test:
 	  -DCMAKE_PREFIX_PATH=$(abspath $(PKG_DIR))/prefix
 	$(CMAKE) --build $(PKG_DIR)/consumer
 	$(PKG_DIR)/consumer/consumer
+
+# Build the random_int() libFuzzer target with Clang (CXX=clang++),
+# ASan and UBSan, and fuzz it for FUZZ_SECONDS. ctest replays its seed
+# inputs on every build without libFuzzer.
+fuzz:
+	$(CMAKE) -S . -B $(FUZZ_DIR) -DCMAKE_BUILD_TYPE=RelWithDebInfo -DJSPASSGEN_WERROR=ON \
+	  -DJSPASSGEN_BUILD_TESTS=OFF -DJSPASSGEN_BUILD_EXAMPLES=OFF -DJSPASSGEN_BUILD_FUZZERS=ON \
+	  -DCMAKE_CXX_FLAGS="$(FUZZ_FLAGS)" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" \
+	  $(CMAKE_ARGS)
+	$(CMAKE) --build $(FUZZ_DIR) --parallel
+	$(FUZZ_DIR)/jspassgen_fuzz_random_int -max_total_time=$(FUZZ_SECONDS) -use_value_profile=1
 
 # Render .github/demo.gif with vhs: the tape builds and runs the
 # random_draws example.
@@ -87,4 +101,4 @@ tidy: configure
 	else echo "$(CLANG_TIDY) not found: clang-tidy skipped (CI runs it)"; fi
 
 clean:
-	rm -rf $(BUILD_DIR) $(PKG_DIR) build-demo
+	rm -rf $(BUILD_DIR) $(PKG_DIR) $(FUZZ_DIR) build-demo

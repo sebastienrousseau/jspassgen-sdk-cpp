@@ -29,6 +29,9 @@ option(JSPASSGEN_BUILD_EXAMPLES "Build the examples" ${JSPASSGEN_TOP_LEVEL})
 option(JSPASSGEN_WERROR "Treat compiler warnings as errors" OFF)
 option(JSPASSGEN_INSTALL "Generate the install rules and CMake package config"
        ${JSPASSGEN_TOP_LEVEL})
+# The libFuzzer target needs Clang; `make fuzz` sets the instrumentation
+# flags and runs it.
+option(JSPASSGEN_BUILD_FUZZERS "Build the libFuzzer targets (Clang only)" OFF)
 
 function(jspassgen_warnings target)
   if(MSVC)
@@ -67,6 +70,17 @@ endif()
 if(JSPASSGEN_BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
+endif()
+
+if(JSPASSGEN_BUILD_FUZZERS)
+  add_executable(jspassgen_fuzz_random_int tests/fuzz/random_int_contract.cpp
+                                           tests/fuzz/random_int_fuzz.cpp)
+  target_include_directories(jspassgen_fuzz_random_int PRIVATE ${PROJECT_SOURCE_DIR}/tests
+                                                               ${PROJECT_SOURCE_DIR}/src)
+  target_link_libraries(jspassgen_fuzz_random_int PRIVATE jspassgen::jspassgen)
+  target_compile_options(jspassgen_fuzz_random_int PRIVATE -fsanitize=fuzzer)
+  target_link_options(jspassgen_fuzz_random_int PRIVATE -fsanitize=fuzzer)
+  jspassgen_warnings(jspassgen_fuzz_random_int)
 endif()
 
 # `cmake --install` puts the library, the public headers (version.hpp

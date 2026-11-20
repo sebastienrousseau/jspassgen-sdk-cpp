@@ -4,8 +4,8 @@
 # measured by rust-code-analysis, and clang-tidy), build and unit tests
 # on GCC and Clang (each also with ASan and UBSan), the same tests on
 # macOS and Windows so every operating-system CSPRNG backend runs
-# (getrandom, arc4random_buf, BCryptGenRandom), and the installed CMake
-# package.
+# (getrandom, arc4random_buf, BCryptGenRandom), the random_int fuzz
+# target under libFuzzer, and the installed CMake package.
 name: CI
 
 on:
@@ -137,6 +137,21 @@ jobs:
           else
             build/jspassgen_random_draws
           fi
+
+  fuzz:
+    name: Fuzz random_int (libFuzzer, ASan and UBSan)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CC: clang-18
+      CXX: clang++-18
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the fuzz target and fuzz it for 60 seconds
+        run: make fuzz FUZZ_SECONDS=60
 
   package:
     name: Installed CMake package (find_package)

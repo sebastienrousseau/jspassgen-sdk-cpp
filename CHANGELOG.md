@@ -8,6 +8,16 @@ advance in `0.0.1` steps in lockstep with the jspassgen suite.
 
 ## [0.0.23] - Unreleased
 
+### Added
+
+- A libFuzzer target for `random_int`'s contract
+  (`tests/fuzz/random_int_fuzz.cpp`): `max` below 1 is rejected, results
+  stay in `[0, max)`, the rejection threshold is exactly 2^64 mod `max`,
+  and the rejection sampling takes the first accepted word and reduces
+  it modulo `max`. `make fuzz` and the CI `fuzz` job run it with Clang,
+  ASan and UBSan for 60 seconds; ctest replays its seed inputs on every
+  platform.
+
 ### Changed
 
 - Version 0.0.23, in lockstep with the jspassgen suite: `CMakeLists.txt`,
