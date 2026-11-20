@@ -15,13 +15,13 @@ include(FetchContent)
 FetchContent_Declare(
   jspassgen
   GIT_REPOSITORY https://github.com/sebastienrousseau/jspassgen-sdk-cpp.git
-  GIT_TAG        v0.0.22)
+  GIT_TAG        v0.0.23)  # not tagged yet: use a commit SHA until it is
 FetchContent_MakeAvailable(jspassgen)
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
 ```
 
 Or install a checkout with `cmake --install` and use
-`find_package(jspassgen 0.0.22 CONFIG)`.
+`find_package(jspassgen 0.0.23 CONFIG)`.
 
 ## Quick start
 

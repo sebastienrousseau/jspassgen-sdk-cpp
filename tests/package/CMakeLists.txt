@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(jspassgen_consumer LANGUAGES CXX)
 
-find_package(jspassgen 0.0.22 CONFIG REQUIRED)
+find_package(jspassgen 0.0.23 CONFIG REQUIRED)
 
 add_executable(consumer main.cpp)
 target_compile_features(consumer PRIVATE cxx_std_17)

@@ -66,7 +66,7 @@ include(FetchContent)
 FetchContent_Declare(
   jspassgen
   GIT_REPOSITORY https://github.com/sebastienrousseau/jspassgen-sdk-cpp.git
-  GIT_TAG        v0.0.22)
+  GIT_TAG        v0.0.23)  # not tagged yet: use a commit SHA until it is
 FetchContent_MakeAvailable(jspassgen)
 
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
@@ -86,7 +86,7 @@ cmake --install build --prefix /opt/jspassgen
 ```
 
 ```cmake
-find_package(jspassgen 0.0.22 CONFIG REQUIRED)  # with CMAKE_PREFIX_PATH=/opt/jspassgen
+find_package(jspassgen 0.0.23 CONFIG REQUIRED)  # with CMAKE_PREFIX_PATH=/opt/jspassgen
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
 ```
 
