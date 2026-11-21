@@ -6,7 +6,7 @@ All notable changes to this project are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 advance in `0.0.1` steps in lockstep with the jspassgen suite.
 
-## [0.0.24] - Unreleased
+## [0.0.24] - 2026-11-21
 
 ### Added
 
@@ -17,6 +17,12 @@ advance in `0.0.1` steps in lockstep with the jspassgen suite.
   `jspassgen-sdk-cpp-<version>.intoto.jsonl`. Check a download with
   `gh attestation verify <file> --repo sebastienrousseau/jspassgen-sdk-cpp`.
   This answers the OpenSSF Scorecard Signed-Releases check.
+
+### Changed
+
+- Version 0.0.24, in lockstep with the jspassgen suite: `CMakeLists.txt`,
+  `CITATION.cff`, the SECURITY and SUPPORT tables, the install snippets,
+  the bug template and the package test.
 
 ## [0.0.23] - 2026-11-20
 
