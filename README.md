@@ -66,7 +66,7 @@ include(FetchContent)
 FetchContent_Declare(
   jspassgen
   GIT_REPOSITORY https://github.com/sebastienrousseau/jspassgen-sdk-cpp.git
-  GIT_TAG        v0.0.23)
+  GIT_TAG        v0.0.24)
 FetchContent_MakeAvailable(jspassgen)
 
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
@@ -86,7 +86,7 @@ cmake --install build --prefix /opt/jspassgen
 ```
 
 ```cmake
-find_package(jspassgen 0.0.23 CONFIG REQUIRED)  # with CMAKE_PREFIX_PATH=/opt/jspassgen
+find_package(jspassgen 0.0.24 CONFIG REQUIRED)  # with CMAKE_PREFIX_PATH=/opt/jspassgen
 target_link_libraries(your_app PRIVATE jspassgen::jspassgen)
 ```
 
@@ -174,7 +174,7 @@ conformance kit as its generators land.
 | **`jspassgen-sdk-cpp`** | Native C++17 port on the OS CSPRNG | C++ programs |
 | [`jspassgen.github.io`](https://github.com/sebastienrousseau/jspassgen.github.io) | Source of [jspassgen.com](https://jspassgen.com) | Evaluating the suite |
 
-Every member ships at 0.0.23, the suite's second lockstep release: the
+Every member ships at 0.0.24, the suite's third lockstep release: the
 core, CLI, MCP and LSP servers on npm, the Python, Rust, Java and .NET
 SDKs on PyPI, crates.io, Maven Central and NuGet, and the C++ SDK and
 the site as GitHub releases. The table gives each member's purpose, and

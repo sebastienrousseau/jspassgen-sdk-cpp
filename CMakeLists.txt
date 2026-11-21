@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 # The version below is the single source of truth: version.hpp is
 # generated from it and scripts/verify-release-versions checks every
 # other file against it.
-project(jspassgen VERSION 0.0.23 DESCRIPTION "Native C++17 port of the jspassgen core"
+project(jspassgen VERSION 0.0.24 DESCRIPTION "Native C++17 port of the jspassgen core"
         LANGUAGES CXX)
 
 include(GNUInstallDirs)
@@ -86,7 +86,7 @@ endif()
 # `cmake --install` puts the library, the public headers (version.hpp
 # included) and lib/cmake/jspassgen/ (package config, targets, version)
 # under the prefix, so a consumer writes
-# find_package(jspassgen 0.0.23 CONFIG) and links jspassgen::jspassgen.
+# find_package(jspassgen 0.0.24 CONFIG) and links jspassgen::jspassgen.
 # Every 0.0.x release may break the API, so the version file accepts
 # the exact version only.
 if(JSPASSGEN_INSTALL)
